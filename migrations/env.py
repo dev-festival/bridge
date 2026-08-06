@@ -6,14 +6,15 @@ from alembic import context
 from sqlalchemy import Connection
 
 from bridge_surface.config import get_settings
-from bridge_surface.persistence import Base, create_database_engine
+from bridge_surface.models import User
+from bridge_surface.persistence import create_database_engine
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+target_metadata = User.metadata
 
 
 def get_database_url() -> str:

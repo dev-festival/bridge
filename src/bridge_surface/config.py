@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -34,6 +35,9 @@ class Settings(BaseSettings):
     debug: bool = False
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     database_url: str = Field(default="sqlite:///./bridge_surface.db", repr=False)
+    local_user_id: UUID = UUID("00000000-0000-4000-8000-000000000001")
+    local_user_display_name: str = Field(default="Local User", min_length=1, max_length=120)
+    local_user_preferred_language: Literal["ja", "en"] = "en"
 
     def public_config(self) -> PublicConfig:
         """Return an explicit allowlist rather than serializing all process settings."""

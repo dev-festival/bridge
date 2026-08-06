@@ -12,8 +12,8 @@ from bridge_surface.persistence import (
 )
 
 
-def test_declarative_base_starts_without_domain_tables() -> None:
-    assert not Base.metadata.tables
+def test_declarative_base_contains_only_the_migrated_user_table() -> None:
+    assert set(Base.metadata.tables) == {"users"}
 
 
 def test_engine_is_lazy_and_session_can_reach_sqlite(

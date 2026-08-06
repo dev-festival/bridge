@@ -19,10 +19,10 @@ def current_revision(engine: Engine) -> str | None:
         return MigrationContext.configure(connection).get_current_revision()
 
 
-def test_empty_baseline_is_the_only_migration_head(alembic_config: Config) -> None:
+def test_user_revision_is_the_only_migration_head(alembic_config: Config) -> None:
     scripts = ScriptDirectory.from_config(alembic_config)
 
-    assert scripts.get_heads() == ["0001_empty_baseline"]
+    assert scripts.get_heads() == ["0002_create_users"]
     assert scripts.get_base() == "0001_empty_baseline"
 
 
@@ -32,8 +32,8 @@ def test_migration_upgrades_to_head_and_downgrades_to_base(
 ) -> None:
     command.upgrade(alembic_config, "head")
 
-    assert current_revision(database_engine) == "0001_empty_baseline"
-    assert inspect(database_engine).get_table_names() == ["alembic_version"]
+    assert current_revision(database_engine) == "0002_create_users"
+    assert inspect(database_engine).get_table_names() == ["alembic_version", "users"]
 
     command.downgrade(alembic_config, "base")
 
@@ -41,7 +41,7 @@ def test_migration_upgrades_to_head_and_downgrades_to_base(
     assert inspect(database_engine).get_table_names() == ["alembic_version"]
 
     command.upgrade(alembic_config, "head")
-    assert current_revision(database_engine) == "0001_empty_baseline"
+    assert current_revision(database_engine) == "0002_create_users"
 
 
 def test_importing_application_does_not_create_a_database(

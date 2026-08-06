@@ -4,12 +4,25 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from alembic import command
 from alembic.config import Config
 from sqlalchemy import Engine
+from sqlalchemy.orm import Session
 
-from bridge_surface.persistence import create_database_engine
+from bridge_surface.persistence import (
+    create_database_engine,
+    create_session_factory,
+    session_scope,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture
+def anyio_backend() -> str:
+    """Keep async HTTP tests on the installed asyncio backend."""
+
+    return "asyncio"
 
 
 @pytest.fixture
@@ -45,3 +58,20 @@ def alembic_config(sqlite_database_url: str) -> Config:
     config.set_main_option("script_location", (PROJECT_ROOT / "migrations").as_posix())
     config.set_main_option("sqlalchemy.url", sqlite_database_url)
     return config
+
+
+@pytest.fixture
+def migrated_database_engine(alembic_config: Config, database_engine: Engine) -> Engine:
+    """Return an isolated engine after applying all committed migrations."""
+
+    command.upgrade(alembic_config, "head")
+    return database_engine
+
+
+@pytest.fixture
+def database_session(migrated_database_engine: Engine) -> Iterator[Session]:
+    """Yield a session connected to a fully migrated isolated database."""
+
+    factory = create_session_factory(migrated_database_engine)
+    with session_scope(factory) as session:
+        yield session
