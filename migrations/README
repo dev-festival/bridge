@@ -1,0 +1,5 @@
+Alembic migrations for Bridge Surface.
+
+The application never creates tables during normal startup. Schema changes are
+applied explicitly through Alembic. The first revision is intentionally empty so
+the migration lifecycle exists before persistent domain models are introduced.

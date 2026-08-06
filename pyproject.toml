@@ -4,8 +4,10 @@ version = "0.1.0"
 description = "A shared bilingual communication surface for Japanese and English business communication."
 requires-python = ">=3.13"
 dependencies = [
+    "alembic>=1.14,<2",
     "fastapi>=0.115,<1",
     "pydantic-settings>=2.7,<3",
+    "sqlalchemy>=2.0,<3",
     "uvicorn>=0.32,<1",
 ]
 

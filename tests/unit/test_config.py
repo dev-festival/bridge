@@ -13,6 +13,8 @@ def test_settings_have_safe_local_defaults() -> None:
     assert settings.api_prefix == "/api/v1"
     assert settings.debug is False
     assert settings.log_level == "INFO"
+    assert settings.database_url == "sqlite:///./bridge_surface.db"
+    assert "database_url" not in repr(settings)
 
 
 def test_public_config_is_an_explicit_allowlist(monkeypatch: MonkeyPatch) -> None:
@@ -25,3 +27,12 @@ def test_public_config_is_an_explicit_allowlist(monkeypatch: MonkeyPatch) -> Non
     assert "must-not-leak" not in serialized
     assert "api_key" not in serialized.lower()
     assert "password" not in serialized.lower()
+    assert "database" not in serialized.lower()
+
+
+def test_database_url_can_be_configured_from_the_environment(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setenv("BRIDGE_DATABASE_URL", "sqlite:///./configured.db")
+
+    settings = Settings(_env_file=None)  # type: ignore[call-arg]
+
+    assert settings.database_url == "sqlite:///./configured.db"

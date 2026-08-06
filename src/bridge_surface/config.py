@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     api_prefix: str = Field(default="/api/v1", pattern=r"^/[a-zA-Z0-9/_-]+$")
     debug: bool = False
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    database_url: str = Field(default="sqlite:///./bridge_surface.db", repr=False)
 
     def public_config(self) -> PublicConfig:
         """Return an explicit allowlist rather than serializing all process settings."""
